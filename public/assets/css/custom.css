@@ -1,0 +1,508 @@
+/* =====================================================
+   GLOBAL DASHBOARD STYLE (AMAN UNTUK SEMUA HALAMAN)
+===================================================== */
+body {
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f4f6fb;
+    color: #1f2937;
+}
+
+/* Heading lebih tegas */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+}
+
+/* Text sekunder tetap ringan tapi jelas */
+.text-muted {
+    font-weight: 400;
+}
+
+/* ===== KONTEN UTAMA ===== */
+.main-panel .content {
+    padding: 24px;
+}
+
+/* ===== SECTION SPACING ===== */
+.section {
+    margin-bottom: 28px;
+}
+
+/* ===== CARD BODY LEBIH KONSISTEN ===== */
+.card-body {
+    padding: 20px 22px;
+}
+
+/* ===== STAT CARD ===== */
+.card .small {
+    font-size: 12.5px;
+}
+
+/* ===== CARD ===== */
+.card {
+    border-radius: 14px;
+    border: none;
+}
+
+.card-body {
+    padding: 1.25rem 1.5rem;
+}
+
+/* ===== TABLE ===== */
+.table thead th {
+    background: #f4f6f8;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 14px;
+    color: #2d3748;
+}
+
+.table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+/* ===== BADGE ===== */
+.badge-divisi {
+    background: #edf2f7;
+    color: #2f855a;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* ===== BUTTON ===== */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== FILTER ===== */
+.filter-bar select,
+.filter-bar button {
+    height: 38px;
+    border-radius: 8px;
+}
+
+/* ===== PAGINATION ===== */
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 3px;
+    color: #4a5568;
+}
+
+.pagination .active .page-link {
+    background: #2f855a;
+    border-color: #2f855a;
+}
+
+/*
+/* ===== MODAL CLEAN MODERN ===== */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    animation: modalFade 0.25s ease;
+}
+
+@keyframes modalFade {
+    from {
+        transform: translateY(15px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ===== HEADER ===== */
+.modal-header-clean {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.25rem;
+}
+
+.modal-header-clean .modal-title {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.modal-header-clean .close {
+    color: #6b7280;
+    font-size: 1.2rem;
+}
+
+/* ===== BODY ===== */
+.modal-body {
+    padding: 1.25rem;
+}
+
+.modal-body .form-group {
+    margin-bottom: 0.85rem;
+}
+
+.modal-body label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.modal-body .form-control {
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+/* ===== FOOTER ===== */
+.modal-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 0.75rem 1.25rem;
+}
+
+/* ===== ICON ACCENT ===== */
+.modal-title i {
+    margin-right: 6px;
+    opacity: 0.7;
+}
+
+/* ===== SIZE CONTROL ===== */
+.modal-md {
+    max-width: 560px;
+}
+
+.modal-sm {
+    max-width: 420px;
+}
+
+/* ===== FIX CLOSE BUTTON (ICON X) ===== */
+.modal-header-clean .close {
+    color: #6b7280;
+    /* abu gelap (elegan & terlihat) */
+    opacity: 1;
+    font-size: 1.25rem;
+    line-height: 1;
+    text-shadow: none;
+    transition: all 0.2s ease;
+}
+
+.modal-header-clean .close:hover {
+    color: #111827;
+    /* lebih gelap saat hover */
+    transform: rotate(90deg);
+    /* efek halus modern */
+}
+
+/* Hilangkan outline saat fokus */
+.modal-header-clean .close:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* ===== RESPONSIVE MOBILE ===== */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.75rem;
+    }
+
+    .modal-md,
+    .modal-sm {
+        max-width: 100%;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .auth-left {
+        display: none;
+        padding-right: 2rem;
+    }
+}
+
+.auth-right {
+    padding-left: 2rem;
+}
+
+/* ===== FORCE CHECKBOX TAMPIL (READY DASHBOARD FIX) ===== */
+input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    opacity: 1 !important;
+    position: static !important;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/* Sidebar full tinggi layar */
+.sidebar {
+    height: 100vh;
+}
+
+/* Wrapper sidebar jadi kolom */
+.sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Nav isi penuh tinggi sidebar */
+.sidebar-wrapper .nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* INI KUNCI UTAMA */
+}
+
+/* ===== SIDEBAR LOGOUT FIX ===== */
+
+/* ===== SIDEBAR LOGOUT (KONSISTEN MENU) ===== */
+.sidebar .nav .nav-item-logout>a {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ff6b6b !important;
+}
+
+/* icon sejajar */
+.sidebar .nav .nav-item-logout i {
+    font-size: 18px;
+    margin-right: 15px;
+    width: 20px;
+    text-align: center;
+}
+
+/* text sejajar menu lain */
+.sidebar .nav .nav-item-logout p {
+    margin: 0;
+    line-height: 1;
+}
+
+/* hover */
+.sidebar .nav .nav-item-logout>a:hover {
+    background: rgba(255, 107, 107, 0.12);
+}
+
+/* dorong logout ke bawah */
+.nav-item-logout {
+    margin-top: auto;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Logout tetap di bawah */
+.nav-item-logout {
+    margin-top: auto;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Logout dipaksa ke paling bawah */
+/* .nav-item-logout {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+} */
+
+/* Warna & hover logout */
+/* .nav-item-logout a {
+    color: #ff6b6b !important;
+} */
+
+/* .nav-item-logout a:hover {
+    background: rgba(255, 107, 107, 0.12) !important;
+} */
+
+/* Logout terdorong ke bawah */
+/* .nav-logout {
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+} */
+/* paksa hamburger selalu tampil */
+/* .logo-header .navbar-toggler {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+} */
+.nav-collapse {
+    padding-left: 20px;
+}
+
+.nav-collapse .sub-item {
+    padding-left: 10px;
+}
+
+/*KERAPIAN TABEL*/
+/* .table-fixed {
+    table-layout: fixed;
+} */
+
+.table td,
+.table th {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.table td:nth-child(3) {
+    /* Nama Barang */
+    white-space: normal;
+}
+
+/* =========================================
+   FILTER FIX HEIGHT & TEXT
+========================================= */
+
+#formFilter .form-control {
+    height: 38px !important;
+    padding: 6px 12px !important;
+    font-size: 13px;
+}
+
+#formFilter select.form-control {
+    height: 38px !important;
+}
+
+#formFilter .btn {
+    height: 38px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Biar teks jelas */
+#formFilter .form-control,
+#formFilter select {
+    color: #1f2937 !important;
+}
+
+/* ===== DASHBOARD LOGO FIX ===== */
+.dashboard-logo {
+    height: 52px;
+    /* lebih besar & jelas */
+    width: auto;
+    object-fit: contain;
+}
+
+/* Desktop besar */
+@media (min-width: 1200px) {
+    .dashboard-logo {
+        height: 56px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .dashboard-logo {
+        height: 40px;
+    }
+}
+/* .table-standard {
+    table-layout: fixed;
+} */
+ /* ============================
+   OPERASIONAL PAGE
+============================ */
+
+ @media (min-width: 768px) {
+
+     .operasional-page table {
+         width: 100%;
+     }
+
+     .operasional-page th,
+     .operasional-page td {
+         vertical-align: middle;
+         padding: 14px 12px;
+     }
+
+     .col-no {
+         width: 5%;
+     }
+
+     .col-tanggal {
+         width: 15%;
+     }
+
+     .col-nama {
+         width: 25%;
+     }
+
+     .col-jenis {
+         width: 10%;
+     }
+
+     .col-jumlah {
+         width: 10%;
+     }
+
+     .col-satuan {
+         width: 8%;
+     }
+
+     .col-harga {
+         width: 12%;
+     }
+
+     .col-total {
+         width: 13%;
+     }
+
+     .col-aksi {
+         width: 10%;
+     }
+ }
+
+ @media (max-width: 767px) {
+
+     .operasional-page th,
+     .operasional-page td {
+         font-size: 13px;
+         padding: 10px;
+         white-space: nowrap;
+     }
+
+     .operasional-page .table-responsive {
+         overflow-x: auto;
+     }
+ }
+
+ .operasional-page tbody tr:hover {
+     background-color: #f8f9fa;
+ }
+ .operasional-page table {
+     border-collapse: separate;
+     border-spacing: 0;
+ }
+
+ .operasional-page thead th {
+     font-size: 13px;
+     letter-spacing: .5px;
+     background: #f8f9fb;
+ }
+ 

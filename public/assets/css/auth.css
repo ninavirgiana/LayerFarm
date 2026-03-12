@@ -1,0 +1,146 @@
+/* =========================================
+   AUTH CLEAN MODERN STYLE
+========================================= */
+body {
+    overflow-x: hidden;
+}
+html {
+    overflow-x: hidden;
+}
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    padding: 24px;
+}
+
+/* ===== WRAPPER ===== */
+.auth-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+/* ===== CARD ===== */
+.auth-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 420px;
+    transition: all 0.3s ease;
+}
+
+/* Hover subtle modern */
+.auth-card:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== IMAGE ===== */
+.auth-card img {
+    max-width: 75%;
+}
+
+/* ===== TITLE ===== */
+.auth-card h4 {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 20px;
+}
+
+.auth-card .text-muted {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* ===== INPUT ===== */
+.form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-control {
+    border-radius: 12px;
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.2);
+}
+
+/* ===== CHECKBOX ===== */
+.form-check-input {
+    cursor: pointer;
+}
+
+.form-check-label {
+    font-size: 13px;
+}
+
+/* ===== BUTTON ===== */
+.btn {
+    border-radius: 12px;
+    font-weight: 500;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: #2563EB;
+    border-color: #2563EB;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1E4ED8;
+    border-color: #1E4ED8;
+    transform: translateY(-1px);
+}
+
+/* ===== LINK ===== */
+a {
+    color: #2563EB;
+    font-size: 13px;
+}
+
+a:hover {
+    color: #1E40AF;
+}
+
+/* =========================================
+   RESPONSIVE MOBILE
+========================================= */
+
+@media (max-width: 576px) {
+    body.auth-page {
+        align-items: center;
+        padding-top: 0;
+    }
+
+    .auth-card {
+        padding: 25px;
+        border-radius: 16px;
+    }
+
+    .auth-card img {
+        max-width: 85%;
+    }
+
+    .auth-card h4 {
+        font-size: 18px;
+    }
+}
