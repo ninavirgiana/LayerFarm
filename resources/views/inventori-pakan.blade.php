@@ -341,7 +341,7 @@
                             @if (auth()->user()->isAdmin())
                                 <div class="col-md-4 harga-tambah">
                                     <div class="form-group">
-                                        <label>Harga Satuan (Rp)</label>
+                                        <label>Harga (Rp)</label>
 
                                         <input type="text" name="harga_satuan" id="hargaTambah"
                                             class="form-control @error('harga_satuan') is-invalid @enderror"
@@ -532,7 +532,17 @@
             return rupiah;
 
         }
+function formatJumlah(angka){
 
+    angka = parseFloat(angka);
+
+    if(isNaN(angka)) return '';
+
+    if(angka === 0) return '0';
+
+    return angka.toString().replace(/\.?0+$/, '');
+
+}
         /* TAMBAH  */
         function hitungTambah() {
 
@@ -622,17 +632,22 @@
             $('#formEditTransaksi').attr('action', baseUrl + '/' + btn.data('id'));
             $('#formEditTransaksi [name=nama_barang]').val(btn.data('nama'));
             $('#formEditTransaksi [name=jenis_transaksi]').val(btn.data('jenis'));
-            $('#formEditTransaksi [name=jumlah]').val(btn.data('jumlah'));
-            let harga = btn.data('harga');
+$('#formEditTransaksi [name=jumlah]').val(
+    formatJumlah(btn.data('jumlah'))
+);
+let harga = btn.data('harga');
 
-            if (harga !== null && harga !== undefined) {
+if (harga !== null && harga !== undefined) {
     harga = formatRupiah(harga.toString());
+} else {
+    harga = '';
 }
 
-            $('#formEditTransaksi [name=harga_satuan]').val(harga);
+$('#formEditTransaksi [name=harga_satuan]').val(harga);
             $('#formEditTransaksi [name=tanggal]').val(btn.data('tanggal'));
 
             $('#jenisEdit').trigger('change');
+            hitungEdit();
 
         });
 

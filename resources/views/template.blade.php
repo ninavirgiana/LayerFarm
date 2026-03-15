@@ -2,7 +2,8 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<title>LayerFarm | @yield('title')</title>
+    <title>LayerFarm | @yield('title')</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
         name='viewport' />
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -24,8 +25,8 @@
                     Ready Dashboard
                 </a> --}}
                 <a href="{{ route('beranda') }}" class="logo d-flex align-items-center">
-    <img src="{{ asset('assets/img/ayam.png') }}" class="dashboard-logo" alt="Logo">
-</a>
+                    <img src="{{ asset('assets/img/ayam.png') }}" class="dashboard-logo" alt="Logo">
+                </a>
 
                 <button class="ml-auto navbar-toggler sidenav-toggler" type="button" data-toggle="collapse"
                     data-target="collapse" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,17 +192,17 @@
                     </li> --}}
 
 
-<li class="nav-item nav-item-logout">
-    <a href="#"
-        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-        <i class="la la-sign-out"></i>
-        <p>Logout</p>
-    </a>
+                    <li class="nav-item nav-item-logout">
+                        <a href="#"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="la la-sign-out"></i>
+                            <p>Logout</p>
+                        </a>
 
-    <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:none;">
-        @csrf
-    </form>
-</li>
+                        <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:none;">
+                            @csrf
+                        </form>
+                    </li>
                 </ul>
                 {{-- <li class="nav-item nav-item-logout">
     <a href="#"

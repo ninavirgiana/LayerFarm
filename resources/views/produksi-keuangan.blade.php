@@ -314,7 +314,7 @@ value="{{ old('harga_satuan') }}">
 
                         <div class="form-group">
                             <label>Harga (Kg)</label>
-                            <input type="number" name="harga_satuan" min="1" max="99999999"
+                            <input type="text" name="harga_satuan" min="1" max="99999999"
                                 class="form-control @error('harga_satuan') is-invalid @enderror"
                                 value="{{ old('harga_satuan') }}">
                             @error('harga_satuan')
@@ -381,7 +381,23 @@ value="{{ old('harga_satuan') }}">
             // ROUTE CONFIG (AMAN & DINAMIS)
             const updateRoute = "{{ route('keuangan.update', ':id') }}";
             const deleteRoute = "{{ route('keuangan.delete', ':id') }}";
+function formatJumlah(angka) {
+    angka = parseFloat(angka);
 
+    if (isNaN(angka)) return '';
+
+    if (angka === 0) return '0';
+
+    return angka.toString().replace(/\.?0+$/, '');
+}
+
+function formatRupiah(angka) {
+    angka = parseInt(angka);
+
+    if (isNaN(angka)) return '';
+
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
             // MODAL EDIT
             $('#modalEditPenjualan').on('show.bs.modal', function(e) {
 
@@ -400,8 +416,13 @@ value="{{ old('harga_satuan') }}">
 
                 $('#formEdit [name=tanggal]').val(oldTanggal ? oldTanggal : btn.data('tanggal'));
                 $('#formEdit [name=jenis_produk]').val(oldProduk ? oldProduk : btn.data('produk'));
-                $('#formEdit [name=jumlah]').val(oldJumlah ? oldJumlah : btn.data('jumlah'));
-                $('#formEdit [name=harga_satuan]').val(oldHarga ? oldHarga : btn.data('harga'));
+                $('#formEdit [name=jumlah]').val(
+    oldJumlah ? oldJumlah : formatJumlah(btn.data('jumlah'))
+);
+
+$('#formEdit [name=harga_satuan]').val(
+    oldHarga ? oldHarga : formatRupiah(btn.data('harga'))
+);
 
                 hitungTotalEdit();
             });

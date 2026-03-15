@@ -309,14 +309,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Berat Telur Layak (Kg)</label>
-                                    <input type="text" name="berat_telur_layak" maxlength="6" inputmode="decimal"
+                                    <input type="text" name="berat_telur_layak" class="form-control" maxlength="6" inputmode="decimal"
                                         oninput="validasiBerat(this)">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Berat Telur Rusak (Kg)</label>
-                                    <input type="text" name="berat_telur_rusak" maxlength="6" inputmode="decimal"
+                                    <input type="text" name="berat_telur_rusak" class="form-control" maxlength="6" inputmode="decimal"
                                         oninput="validasiBerat(this)">
                                 </div>
                             </div>
@@ -391,7 +391,17 @@
             $('#formFilter').submit();
         });
 
+function formatBerat(angka) {
+    angka = parseFloat(angka);
 
+    if (isNaN(angka)) return '';
+
+    // jika nilainya 0 tetap tampil 0
+    if (angka === 0) return '0';
+
+    // hilangkan .00 atau nol di belakang
+    return angka.toString().replace(/\.?0+$/, '');
+}
         /*  MODAL EDIT  */
         const baseUrl = "{{ url('/hasil') }}";
 
@@ -401,8 +411,8 @@
             $('#formEdit').attr('action', baseUrl + '/' + btn.data('id'));
             $('#formEdit [name=kandang_id]').val(btn.data('kandang'));
             $('#formEdit [name=shift]').val(btn.data('shift'));
-            $('#formEdit [name=berat_telur_layak]').val(btn.data('layak'));
-            $('#formEdit [name=berat_telur_rusak]').val(btn.data('rusak'));
+            $('#formEdit [name=berat_telur_layak]').val(formatBerat(btn.data('layak') ?? 0));
+$('#formEdit [name=berat_telur_rusak]').val(formatBerat(btn.data('rusak') ?? 0));
             $('#formEdit [name=tanggal_produksi]').val(btn.data('tanggal'));
         });
 
