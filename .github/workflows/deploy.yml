@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Deployment Logic
         run: |
-          cd /www/wwwroot/Layerfarm
+          cd /www/wwwroot/LayerFarm
 
           # Ambil ID commit untuk deteksi perubahan
           OLD_COMMIT=$(git rev-parse HEAD)
