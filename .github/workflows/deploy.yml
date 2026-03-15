@@ -14,22 +14,32 @@ jobs:
         run: |
           cd /www/wwwroot/LayerFarm
 
-          # Ambil ID commit untuk deteksi perubahan
+          # 1. Ambil ID commit lama untuk deteksi perubahan
           OLD_COMMIT=$(git rev-parse HEAD)
-          git fetch --all
-          git reset --hard origin/master
+
+          # 2. Tarik kode terbaru
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ninavirgiana/LayerFarm.git
+          git fetch -4 --all
+          git reset --hard origin/main
+
+          # 3. Ambil ID commit baru
           NEW_COMMIT=$(git rev-parse HEAD)
 
-          # Build dependencies (Container temporary)
+          # 4. Build dependencies (Container temporary)
           docker run --rm -v $(pwd):/app -w /app composer:2 install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
-          # Perbaikan permission untuk user www/docker (PUID 33)
-          chown -R 33:33 vendor/
+          # 5. Perbaikan permission untuk user www/docker (PUID 33)
+          # Sekalian fix untuk storage dan cache biar aman
+          chown -R 33:33 vendor/ storage/ bootstrap/cache/
+          chmod -R 775 storage/ bootstrap/cache/
 
-          # Refresh cache Laravel
-          docker compose exec -T app php artisan optimize:clear
+          # 6. Refresh cache Laravel
+          docker compose exec -T layerfarm_php php artisan optimize:clear
 
-          # Deteksi otomatis migrasi database
+          # 7. Deteksi otomatis migrasi database
           if [ "$OLD_COMMIT" != "$NEW_COMMIT" ] && git diff --name-only $OLD_COMMIT $NEW_COMMIT | grep -q "^database/migrations/"; then
-            docker compose exec -T app php artisan migrate --force
+            echo "🚀 Perubahan database terdeteksi! Menjalankan migrate..."
+            docker compose exec -T layerfarm_php php artisan migrate --force
+          else
+            echo "✅ Tidak ada file migrasi baru. Skip migrate."
           fi
