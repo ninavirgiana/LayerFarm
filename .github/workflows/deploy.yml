@@ -20,7 +20,7 @@ jobs:
           # 2. Tarik kode terbaru
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ninavirgiana/LayerFarm.git
           git fetch -4 --all
-          git reset --hard origin/main
+          git reset --hard origin/master
 
           # 3. Ambil ID commit baru
           NEW_COMMIT=$(git rev-parse HEAD)
