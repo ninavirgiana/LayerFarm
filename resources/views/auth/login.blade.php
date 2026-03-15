@@ -6,7 +6,7 @@
              style="max-width: 320px; height: auto;">
     </div>
     <div class="mb-4 text-center">
-        <h4 class="fw-bold">Masuk</h4>
+        <h4 class="fw-bold">Login</h4>
         <p class="text-muted">Silakan login ke akun Anda</p>
     </div>
 
