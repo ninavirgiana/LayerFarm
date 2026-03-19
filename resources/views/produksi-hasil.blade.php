@@ -403,25 +403,34 @@ function formatBerat(angka) {
     return angka.toString().replace(/\.?0+$/, '');
 }
         /*  MODAL EDIT  */
-        const baseUrl = "{{ url('/hasil') }}";
 
         $('#modalEditProduksi').on('show.bs.modal', function(e) {
-            let btn = $(e.relatedTarget);
+    let btn = $(e.relatedTarget);
+    let id = btn.data('id');
 
-            $('#formEdit').attr('action', baseUrl + '/' + btn.data('id'));
-            $('#formEdit [name=kandang_id]').val(btn.data('kandang'));
-            $('#formEdit [name=shift]').val(btn.data('shift'));
-            $('#formEdit [name=berat_telur_layak]').val(formatBerat(btn.data('layak') ?? 0));
-$('#formEdit [name=berat_telur_rusak]').val(formatBerat(btn.data('rusak') ?? 0));
-            $('#formEdit [name=tanggal_produksi]').val(btn.data('tanggal'));
-        });
+    let url = "{{ route('hasil.update', ':id') }}";
+    url = url.replace(':id', id);
+
+    $('#formEdit').attr('action', url);
+
+    $('#formEdit [name=kandang_id]').val(btn.data('kandang'));
+    $('#formEdit [name=shift]').val(btn.data('shift'));
+    $('#formEdit [name=berat_telur_layak]').val(formatBerat(btn.data('layak') ?? 0));
+    $('#formEdit [name=berat_telur_rusak]').val(formatBerat(btn.data('rusak') ?? 0));
+    $('#formEdit [name=tanggal_produksi]').val(btn.data('tanggal'));
+});
 
 
         /*  MODAL HAPUS  */
         $('#modalHapusProduksi').on('show.bs.modal', function(e) {
-            let btn = $(e.relatedTarget);
-            $('#formHapus').attr('action', baseUrl + '/' + btn.data('id'));
-        });
+    let btn = $(e.relatedTarget);
+    let id = btn.data('id');
+
+    let url = "{{ route('hasil.destroy', ':id') }}";
+    url = url.replace(':id', id);
+
+    $('#formHapus').attr('action', url);
+});
 
 
         /*AUTO OPEN MODAL JIKA ERROR */
