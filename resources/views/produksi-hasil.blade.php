@@ -392,15 +392,15 @@
         });
 
 function formatBerat(angka) {
-    angka = parseFloat(angka);
+    if (!angka && angka !== 0) return '';
 
-    if (isNaN(angka)) return '';
+    let num = Number(angka);
 
-    // jika nilainya 0 tetap tampil 0
-    if (angka === 0) return '0';
+    if (Number.isInteger(num)) {
+        return num.toString(); // contoh: 10 tetap 10
+    }
 
-    // hilangkan .00 atau nol di belakang
-    return angka.toString().replace(/\.?0+$/, '');
+    return num.toFixed(2).replace(/\.?0+$/, ''); // contoh: 10.50 → 10.5
 }
         /*  MODAL EDIT  */
 

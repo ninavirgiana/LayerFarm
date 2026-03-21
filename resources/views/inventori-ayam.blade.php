@@ -452,8 +452,7 @@
 
 @section('scripts')
     <script>
-        const baseUrl = "{{ url('/ayam') }}";
-
+const baseUrl = "{{ route('ayam') }}";
         $(document).ready(function() {
             /* =============================
        HANDLE MODAL EDIT NORMAL

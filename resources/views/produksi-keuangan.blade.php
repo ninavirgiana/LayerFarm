@@ -386,9 +386,13 @@ function formatJumlah(angka) {
 
     if (isNaN(angka)) return '';
 
-    if (angka === 0) return '0';
+    // kalau bilangan bulat, tampilkan tanpa desimal
+    if (Number.isInteger(angka)) {
+        return angka.toString();
+    }
 
-    return angka.toString().replace(/\.?0+$/, '');
+    // kalau desimal, tampilkan normal (tanpa nol berlebih)
+    return angka.toString().replace(/(\.\d*?[1-9])0+$/, '$1');
 }
 
 function formatRupiah(angka) {
@@ -521,27 +525,52 @@ harga = parseFloat(harga) || 0;
             // TOTAL OTOMATIS MODAL EDIT
             function hitungTotalEdit() {
 
-                let jumlah = parseFloat($('#modalEditPenjualan input[name=jumlah]').val()) || 0;
-                let harga = parseFloat($('#modalEditPenjualan input[name=harga_satuan]').val()) || 0;
+    let jumlah = parseFloat($('#modalEditPenjualan input[name=jumlah]').val()) || 0;
 
-                let total = jumlah * harga;
+    let harga = $('#modalEditPenjualan input[name=harga_satuan]').val()
+        .replace(/\./g, ''); // 🔥 hapus titik dulu
 
-                $('#totalPreviewEdit').val(
-                    "Rp " + total.toLocaleString('id-ID')
-                );
-            }
+    harga = parseFloat(harga) || 0;
 
-            $('#modalEditPenjualan input[name=jumlah], #modalEditPenjualan input[name=harga_satuan]')
-                .on('input', hitungTotalEdit);
+    let total = jumlah * harga;
+
+    $('#totalPreviewEdit').val(
+        "Rp " + total.toLocaleString('id-ID')
+    );
+}
+$('#modalEditPenjualan input[name=harga_satuan]').on('input', function() {
+
+    let angka = $(this).val().replace(/\D/g, '');
+
+if (parseInt(angka || 0) > 99999999) {
+    angka = '99999999';
+}
+
+    let rupiah = angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    $(this).val(rupiah);
+
+    hitungTotalEdit();
+});
+$('#formEdit').on('submit', function() {
+
+    let harga = $('#modalEditPenjualan input[name=harga_satuan]')
+        .val()
+        .replace(/\./g, '');
+
+    $('#modalEditPenjualan input[name=harga_satuan]').val(harga);
+});
+
+
 // FORMAT RUPIAH + PEMBATASAN HARGA
 $('#hargaTambah').on('input', function() {
 
     let angka = $(this).val().replace(/\D/g, '');
 
     // BATAS MAKSIMAL
-    if (angka > 99999999) {
-        angka = 99999999;
-    }
+if (parseInt(angka || 0) > 99999999) {
+    angka = '99999999';
+}
 
     // FORMAT RIBUAN
     let rupiah = angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -551,11 +580,9 @@ $('#hargaTambah').on('input', function() {
     hitungTotalTambah();
 });
 
-$('form').on('submit', function() {
-
+$('#modalTambahPenjualan form').on('submit', function() {
     let harga = $('#hargaTambah').val().replace(/\./g, '');
     $('#hargaTambah').val(harga);
-
 });
         });
     </script>

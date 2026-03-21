@@ -50,12 +50,12 @@
                                     <label class="small">Tahun</label>
                                     <select name="tahun" class="form-control form-control-sm">
                                         <option value="">Semua</option>
-                                        @foreach ([2024, 2025, 2026] as $th)
+@for ($th = now()->year - 2; $th <= now()->year + 1; $th++)
                                             <option value="{{ $th }}"
                                                 {{ request('tahun') == $th ? 'selected' : '' }}>
                                                 {{ $th }}
                                             </option>
-                                        @endforeach
+                                        @endfor
                                     </select>
                                 </div>
 
@@ -103,7 +103,11 @@
                     @endif
 
 
-
+@if ($errors->has('delete'))
+    <div class="alert alert-danger">
+        {{ $errors->first('delete') }}
+    </div>
+@endif
                     <!--  TABEL -->
                     <div class="p-0 card-body">
                         <div class="table-responsive">
@@ -165,8 +169,8 @@
                                                             data-target="#modalEditTransaksi" data-id="{{ $item->id }}"
                                                             data-nama="{{ $item->nama_barang }}"
                                                             data-jenis="{{ $item->jenis_transaksi }}"
-                                                            data-jumlah="{{ $item->jumlah }}"
-                                                            data-satuan="{{ $item->satuan }}"
+                                                            data-jumlah="{{ (int) $item->jumlah }}"
+data-harga="{{ (int) $item->harga_satuan }}"
                                                             data-harga="{{ $item->harga_satuan }}"
                                                             data-tanggal="{{ $item->tanggal }}">
                                                             <i class="la la-edit"></i>
@@ -320,7 +324,7 @@
                                 <div class="form-group">
                                     <label>Jumlah</label>
                                     <input type="number" name="jumlah" id="jumlahTambah" max="999999"
-                                        min="1" inputmode="numeric" oninput="this.value=this.value.slice(0,6)"
+                                        min="1" inputmode="numeric" maxlength="6"
                                         class="form-control @error('jumlah') is-invalid @enderror"
                                         value="{{ old('jumlah') }}" required>
 
@@ -343,7 +347,7 @@
                                     <div class="form-group">
                                         <label>Harga (Rp)</label>
 
-                                        <input type="text" name="harga_satuan" id="hargaTambah"
+<input type="text" name="harga_satuan" id="hargaTambah"
                                             class="form-control @error('harga_satuan') is-invalid @enderror"
                                             inputmode="numeric" maxlength="12" value="{{ old('harga_satuan') }}">
                                         @error('harga_satuan')
@@ -434,7 +438,7 @@
                                 <div class="form-group">
                                     <label>Jumlah</label>
                                     <input type="number" name="jumlah" id="jumlahEdit" max="999999" min="1"
-                                        inputmode="numeric" oninput="this.value=this.value.slice(0,6)"
+                                        inputmode="numeric" maxlength="6"
                                         class="form-control" required>
                                 </div>
                             </div>
@@ -513,64 +517,41 @@
 @section('scripts')
 
     <script>
-        const baseUrl = "{{ url('/pakan') }}";
+const baseUrl = "{{ route('pakan') }}";
+function formatRupiah(angka) {
+    if (!angka) return '';
 
-        /* FORMAT RUPIAH  */
-        function formatRupiah(angka) {
-
-            angka = angka.replace(/[^,\d]/g, '').toString();
-            let split = angka.split(',');
-            let sisa = split[0].length % 3;
-            let rupiah = split[0].substr(0, sisa);
-            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-            if (ribuan) {
-                let separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-
-            return rupiah;
-
-        }
-function formatJumlah(angka){
-
-    angka = parseFloat(angka);
-
-    if(isNaN(angka)) return '';
-
-    if(angka === 0) return '0';
-
-    return angka.toString().replace(/\.?0+$/, '');
-
+    angka = angka.toString().replace(/\D/g, '');
+    return angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+
         /* TAMBAH  */
         function hitungTambah() {
 
-            let j = $('#jumlahTambah').val() || 0;
-            let h = $('#hargaTambah').val().replace(/\./g, '') || 0;
+    let j = parseInt($('#jumlahTambah').val()) || 0;
 
-            $('#totalTambah').val(
-                'Rp ' + (j * h).toLocaleString('id-ID')
-            );
+    let h = $('#hargaTambah').val().replace(/\D/g, '');
+    h = parseInt(h) || 0;
 
-        }
+    $('#totalTambah').val(
+        'Rp ' + (j * h).toLocaleString('id-ID')
+    );
+}
+$('#hargaTambah').on('input', function() {
 
-        $('#jumlahTambah, #hargaTambah').on('input', hitungTambah);
+    let angka = this.value.replace(/\D/g, '');
+
+    if (angka.length > 9) {
+        angka = angka.slice(0, 9);
+    }
+
+    this.value = formatRupiah(angka);
+    hitungTambah();
+});
+
 
         /* format harga tambah */
-        $('#hargaTambah').on('keyup', function() {
-
-            let angka = this.value.replace(/\./g, '');
-
-            if (angka.length > 9) {
-                angka = angka.slice(0, 9);
-            }
-
-            this.value = formatRupiah(angka);
-            hitungTambah();
-
-        });
-
+$('#jumlahTambah').on('input', hitungTambah);
         $('#jenisTambah').on('change', function() {
 
             if (this.value === 'keluar') {
@@ -585,32 +566,32 @@ function formatJumlah(angka){
         /* EDIT  */
         function hitungEdit() {
 
-            let j = $('#jumlahEdit').val() || 0;
-            let h = $('#hargaEdit').val().replace(/\./g, '') || 0;
+    let j = parseInt($('#jumlahEdit').val()) || 0;
 
-            $('#totalEdit').val(
-                'Rp ' + (j * h).toLocaleString('id-ID')
-            );
+    let h = $('#hargaEdit').val().replace(/\./g, '');
+    h = parseInt(h) || 0;
 
-        }
+    $('#totalEdit').val(
+        j && h ? 'Rp ' + (j * h).toLocaleString('id-ID') : ''
+    );
+}
 
         /* realtime hitung */
         $('#jumlahEdit, #hargaEdit').on('input', hitungEdit);
 
         /* format harga edit */
-        $('#hargaEdit').on('keyup', function() {
+$('#hargaEdit').on('input', function() {
 
-            let angka = this.value.replace(/\./g, '');
+    let angka = this.value.replace(/\./g, '');
 
-            if (angka.length > 9) {
-                angka = angka.slice(0, 9);
-            }
+    if (angka.length > 9) {
+        angka = angka.slice(0, 9);
+    }
 
-            this.value = formatRupiah(angka);
-            hitungEdit();
+    this.value = formatRupiah(angka);
+    hitungEdit();
 
-        });
-
+});
         /* perubahan jenis transaksi edit */
         $('#jenisEdit').on('change', function() {
 
@@ -627,29 +608,41 @@ function formatJumlah(angka){
         /* modal edit dibuka */
         $('#modalEditTransaksi').on('show.bs.modal', function(e) {
 
-            let btn = $(e.relatedTarget);
+    let btn = $(e.relatedTarget);
 
-            $('#formEditTransaksi').attr('action', baseUrl + '/' + btn.data('id'));
-            $('#formEditTransaksi [name=nama_barang]').val(btn.data('nama'));
-            $('#formEditTransaksi [name=jenis_transaksi]').val(btn.data('jenis'));
-$('#formEditTransaksi [name=jumlah]').val(
-    formatJumlah(btn.data('jumlah'))
-);
-let harga = btn.data('harga');
+    $('#formEditTransaksi').attr('action', baseUrl + '/' + btn.data('id'));
 
-if (harga !== null && harga !== undefined) {
-    harga = formatRupiah(harga.toString());
-} else {
-    harga = '';
-}
+    // FIX NAMA BARANG
+    $('#namaEdit').val(''); // RESET DULU
 
-$('#formEditTransaksi [name=harga_satuan]').val(harga);
-            $('#formEditTransaksi [name=tanggal]').val(btn.data('tanggal'));
+let nama = btn.data('nama');
+$('#namaEdit option').each(function () {
+    if ($(this).val().toLowerCase() === String(nama).toLowerCase()) {
+        $(this).prop('selected', true);
+    }
+});
 
-            $('#jenisEdit').trigger('change');
-            hitungEdit();
+    // jenis
+    $('#jenisEdit').val(btn.data('jenis'));
 
-        });
+    // jumlah (langsung angka asli)
+    $('#jumlahEdit').val(btn.data('jumlah'));
+
+    // harga
+let harga = parseInt(btn.data('harga')) || 0;
+
+$('#hargaEdit').val(harga ? formatRupiah(harga.toString()) : '');
+//     if (harga !== null && harga !== undefined && harga !== '') {
+// $('#hargaEdit').val(formatRupiah(harga));} else {
+//     $('#hargaEdit').val('');
+// }
+
+    // tanggal
+    $('#tanggalEdit').val(btn.data('tanggal'));
+
+    $('#jenisEdit').trigger('change');
+    hitungEdit();
+});
 
         /*  HAPUS  */
         $('#modalHapusTransaksi').on('show.bs.modal', function(e) {

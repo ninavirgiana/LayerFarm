@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\URL;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +27,10 @@ class AppServiceProvider extends ServiceProvider
 
         // SET BAHASA INDONESIA UNTUK TANGGAL
         Carbon::setLocale('id');
+
+        // PAKSA HTTPS HANYA DI PRODUCTION
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

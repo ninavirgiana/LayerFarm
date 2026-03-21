@@ -6,6 +6,7 @@ use App\Models\InventoriKandang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class PakanController extends Controller
 {
@@ -87,7 +88,9 @@ class PakanController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $request->merge([
-            'harga_satuan' => str_replace('.', '', $request->harga_satuan)
+            'harga_satuan' => $request->harga_satuan
+                ? str_replace('.', '', $request->harga_satuan)
+                : null
         ]);
 
         // karyawan TIDAK BOLEH input barang masuk
@@ -177,7 +180,9 @@ class PakanController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $request->merge([
-            'harga_satuan' => str_replace('.', '', $request->harga_satuan)
+            'harga_satuan' => $request->harga_satuan
+                ? str_replace('.', '', $request->harga_satuan)
+                : null
         ]);
         if ($user->isKaryawan()) {
             abort(403, 'Anda tidak memiliki izin mengedit data.');
@@ -220,45 +225,56 @@ class PakanController extends Controller
             'harga_satuan.max'         => 'Harga satuan terlalu besar.',
         ]);
 
-        $item = InventoriKandang::findOrFail($id);
+        try {
 
-        $total = null;
+            DB::transaction(function () use ($request, $id, $namaBarang) {
 
-        if ($request->jenis_transaksi === 'masuk') {
-            $total = $request->jumlah * $request->harga_satuan;
+                $item = InventoriKandang::findOrFail($id);
+
+                $total = null;
+
+                if ($request->jenis_transaksi === 'masuk') {
+                    $total = $request->jumlah * $request->harga_satuan;
+                }
+
+                // CEK STOK JIKA KELUAR
+                if ($request->jenis_transaksi === 'keluar') {
+
+                    $stokSekarang = InventoriKandang::where('nama_barang', $namaBarang)
+                        ->where('id', '!=', $id)
+                        ->selectRaw("
+                    SUM(CASE WHEN jenis_transaksi = 'masuk' THEN jumlah ELSE 0 END)
+                    -
+                    SUM(CASE WHEN jenis_transaksi = 'keluar' THEN jumlah ELSE 0 END)
+                    AS stok
+                ")
+                        ->value('stok') ?? 0;
+
+                    if ($request->jumlah > $stokSekarang) {
+                        throw new \Exception('Stok tidak mencukupi. Sisa stok: ' . $stokSekarang);
+                    }
+                }
+
+                $item->update([
+                    'tanggal' => $request->tanggal,
+                    'nama_barang' => $namaBarang,
+                    'jenis_transaksi' => $request->jenis_transaksi,
+                    'jumlah' => $request->jumlah,
+                    'satuan' => 'karung',
+                    'harga_satuan' => $request->jenis_transaksi === 'masuk'
+                        ? $request->harga_satuan
+                        : null,
+                    'total_harga' => $total,
+                ]);
+            });
+        } catch (\Exception $e) {
+
+            return back()
+                ->withErrors([
+                    'jumlah' => $e->getMessage()
+                ])
+                ->withInput();
         }
-
-        //  CEK STOK JIKA KELUAR
-        if ($request->jenis_transaksi === 'keluar') {
-
-            $stokSekarang = InventoriKandang::where('nama_barang', $namaBarang)
-                ->where('id', '!=', $id)
-                ->selectRaw("
-                SUM(CASE WHEN jenis_transaksi = 'masuk' THEN jumlah ELSE 0 END)
-                -
-                SUM(CASE WHEN jenis_transaksi = 'keluar' THEN jumlah ELSE 0 END)
-                AS stok
-            ")
-                ->value('stok') ?? 0;
-
-            if ($request->jumlah > $stokSekarang) {
-                return back()->withErrors([
-                    'jumlah' => 'Stok tidak mencukupi. Sisa stok: ' . $stokSekarang
-                ])->withInput();
-            }
-        }
-
-        $item->update([
-            'tanggal' => $request->tanggal,
-            'nama_barang'     => $namaBarang,
-            'jenis_transaksi' => $request->jenis_transaksi,
-            'jumlah'          => $request->jumlah,
-            'satuan' => 'karung',
-            'harga_satuan'    => $request->jenis_transaksi === 'masuk'
-                ? $request->harga_satuan
-                : null,
-            'total_harga'     => $total,
-        ]);
 
         return redirect()->route('pakan')->with('success', 'Transaksi berhasil diupdate');
     }
