@@ -101,7 +101,7 @@ class PakanController extends Controller
 
         $request->validate([
             'tanggal' => 'required|date|before_or_equal:today',
-                        'nama_barang'     => 'required|string|max:100',
+            'nama_barang'     => 'required|string|max:100',
             'jenis_transaksi' => 'required|in:masuk,keluar',
             'jumlah'          => 'required|numeric|min:1|max:999999',
             // 'satuan'          => 'required|string|max:50|in:karung',
@@ -190,40 +190,42 @@ class PakanController extends Controller
 
         $namaBarang = ucfirst(strtolower(trim($request->nama_barang)));
 
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'tanggal' => 'required|date|before_or_equal:today',
-                        'nama_barang'     => 'required|string|max:100',
+            'nama_barang' => 'required|string|max:100',
             'jenis_transaksi' => 'required|in:masuk,keluar',
-            'jumlah'          => 'required|numeric|min:1|max:999999',
-            // 'satuan'          => 'required|string|max:50|in:karung',
-            'harga_satuan'    => $request->jenis_transaksi === 'masuk'
+            'jumlah' => 'required|numeric|min:1|max:999999',
+            'harga_satuan' => $request->jenis_transaksi === 'masuk'
                 ? 'required|numeric|min:1|max:999999999'
                 : 'nullable',
         ], [
             'tanggal.required' => 'Tanggal wajib diisi.',
             'tanggal.date' => 'Format tanggal tidak valid.',
 
-            'nama_barang.required'     => 'Nama barang wajib diisi.',
-            'nama_barang.string'       => 'Nama barang harus berupa teks.',
-            'nama_barang.max'          => 'Nama barang maksimal 100 karakter.',
+            'nama_barang.required' => 'Nama barang wajib diisi.',
+            'nama_barang.string' => 'Nama barang harus berupa teks.',
+            'nama_barang.max' => 'Nama barang maksimal 100 karakter.',
 
             'jenis_transaksi.required' => 'Jenis transaksi wajib dipilih.',
-            'jenis_transaksi.in'       => 'Jenis transaksi tidak valid.',
+            'jenis_transaksi.in' => 'Jenis transaksi tidak valid.',
 
-            'jumlah.required'          => 'Jumlah wajib diisi.',
-            'jumlah.numeric'           => 'Jumlah harus berupa angka.',
-            'jumlah.min'               => 'Jumlah minimal 1.',
-            'jumlah.max'               => 'Jumlah terlalu besar.',
+            'jumlah.required' => 'Jumlah wajib diisi.',
+            'jumlah.numeric' => 'Jumlah harus berupa angka.',
+            'jumlah.min' => 'Jumlah minimal 1.',
+            'jumlah.max' => 'Jumlah terlalu besar.',
 
-            // 'satuan.required'          => 'Satuan wajib diisi.',
-            // 'satuan.string'            => 'Satuan harus berupa teks.',
-            // 'satuan.max'               => 'Satuan maksimal 50 karakter.',
-
-            'harga_satuan.required'    => 'Harga satuan wajib diisi untuk transaksi masuk.',
-            'harga_satuan.numeric'     => 'Harga satuan harus berupa angka.',
-            'harga_satuan.min'         => 'Harga satuan minimal 1.',
-            'harga_satuan.max'         => 'Harga satuan terlalu besar.',
+            'harga_satuan.required' => 'Harga satuan wajib diisi untuk transaksi masuk.',
+            'harga_satuan.numeric' => 'Harga satuan harus berupa angka.',
+            'harga_satuan.min' => 'Harga satuan minimal 1.',
+            'harga_satuan.max' => 'Harga satuan terlalu besar.',
         ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator, 'edit')
+                ->withInput()
+                ->with('edit_id', $id);
+        }
 
         try {
 
@@ -272,8 +274,9 @@ class PakanController extends Controller
             return back()
                 ->withErrors([
                     'jumlah' => $e->getMessage()
-                ])
-                ->withInput();
+                ], 'edit')
+                ->withInput()
+                ->with('edit_id', $id);
         }
 
         return redirect()->route('pakan')->with('success', 'Transaksi berhasil diupdate');

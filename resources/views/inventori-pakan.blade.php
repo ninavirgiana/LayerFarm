@@ -50,7 +50,7 @@
                                     <label class="small">Tahun</label>
                                     <select name="tahun" class="form-control form-control-sm">
                                         <option value="">Semua</option>
-@for ($th = now()->year - 2; $th <= now()->year + 1; $th++)
+                                        @for ($th = now()->year - 2; $th <= now()->year + 1; $th++)
                                             <option value="{{ $th }}"
                                                 {{ request('tahun') == $th ? 'selected' : '' }}>
                                                 {{ $th }}
@@ -103,15 +103,16 @@
                     @endif
 
 
-@if ($errors->has('delete'))
-    <div class="alert alert-danger">
-        {{ $errors->first('delete') }}
-    </div>
-@endif
+                    @if ($errors->has('delete'))
+                        <div class="alert alert-danger">
+                            {{ $errors->first('delete') }}
+                        </div>
+                    @endif
                     <!--  TABEL -->
                     <div class="p-0 card-body">
                         <div class="table-responsive">
-<table class="table mb-0" style="table-layout:fixed; width:100%;">                                <thead class="table-light">
+                            <table class="table mb-0" style="table-layout:fixed; width:100%;">
+                                <thead class="table-light">
                                     <tr>
                                         <th class="text-center" style="width:60px;">No</th>
                                         <th style="width:150px;">Tanggal</th>
@@ -170,9 +171,8 @@
                                                             data-nama="{{ $item->nama_barang }}"
                                                             data-jenis="{{ $item->jenis_transaksi }}"
                                                             data-jumlah="{{ (int) $item->jumlah }}"
-data-harga="{{ (int) $item->harga_satuan }}"
-                                                            data-harga="{{ $item->harga_satuan }}"
-                                                            data-tanggal="{{ $item->tanggal }}">
+                                                            data-harga="{{ (int) $item->harga_satuan }}"
+                                                            {{-- data-harga="{{ $item->harga_satuan }}" --}} data-tanggal="{{ $item->tanggal }}">
                                                             <i class="la la-edit"></i>
                                                         </button>
 
@@ -279,8 +279,12 @@ data-harga="{{ (int) $item->harga_satuan }}"
                         </div>
                         <div class="form-group">
                             <label>Tanggal</label>
-                            <input type="date" name="tanggal" class="form-control"
+                            <input type="date" name="tanggal"
+                                class="form-control @error('tanggal') is-invalid @enderror"
                                 value="{{ old('tanggal', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" required>
+                            @error('tanggal')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <label>Nama Barang</label>
@@ -347,7 +351,7 @@ data-harga="{{ (int) $item->harga_satuan }}"
                                     <div class="form-group">
                                         <label>Harga (Rp)</label>
 
-<input type="text" name="harga_satuan" id="hargaTambah"
+                                        <input type="text" name="harga_satuan" id="hargaTambah"
                                             class="form-control @error('harga_satuan') is-invalid @enderror"
                                             inputmode="numeric" maxlength="12" value="{{ old('harga_satuan') }}">
                                         @error('harga_satuan')
@@ -411,18 +415,23 @@ data-harga="{{ (int) $item->harga_satuan }}"
 
                             </select>
 
-                            @error('jenis_transaksi')
+                            @error('jenis_transaksi', 'edit')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label>Tanggal</label>
-                            <input type="date" name="tanggal" id="tanggalEdit" class="form-control"
-                                max="{{ date('Y-m-d') }}" required>
+                            <input type="date" name="tanggal" id="tanggalEdit"
+                                class="form-control @error('tanggal') is-invalid @enderror" max="{{ date('Y-m-d') }}"
+                                required>
+                            @error('tanggal', 'edit')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <label>Nama Barang</label>
-                            <select name="nama_barang" id="namaEdit" class="form-control" required>
+                            <select name="nama_barang" id="namaEdit"
+                                class="form-control @error('nama_barang') is-invalid @enderror" required>
 
                                 <option value="Jagung">Jagung</option>
                                 <option value="Katul">Katul</option>
@@ -431,6 +440,9 @@ data-harga="{{ (int) $item->harga_satuan }}"
                                 <option value="Pakan Starter">Pakan Starter</option>
 
                             </select>
+                            @error('nama_barang', 'edit')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
 
                         <div class="row">
@@ -439,7 +451,10 @@ data-harga="{{ (int) $item->harga_satuan }}"
                                     <label>Jumlah</label>
                                     <input type="number" name="jumlah" id="jumlahEdit" max="999999" min="1"
                                         inputmode="numeric" maxlength="6"
-                                        class="form-control" required>
+                                        class="form-control @error('jumlah') is-invalid @enderror" required>
+                                    @error('jumlah', 'edit')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -453,8 +468,12 @@ data-harga="{{ (int) $item->harga_satuan }}"
                             <div class="col-md-4 harga-edit">
                                 <div class="form-group">
                                     <label>Harga Satuan (Rp)</label>
-                                    <input type="text" name="harga_satuan" id="hargaEdit" class="form-control"
+                                    <input type="text" name="harga_satuan" id="hargaEdit"
+                                        class="form-control @error('harga_satuan') is-invalid @enderror"
                                         inputmode="numeric" maxlength="12">
+                                    @error('harga_satuan', 'edit')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -517,48 +536,53 @@ data-harga="{{ (int) $item->harga_satuan }}"
 @section('scripts')
 
     <script>
-const baseUrl = "{{ route('pakan') }}";
-function formatRupiah(angka) {
-    if (!angka) return '';
+        const baseUrl = "{{ route('pakan') }}";
 
-    angka = angka.toString().replace(/\D/g, '');
-    return angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
+        function formatRupiah(angka) {
+            if (!angka) return '';
+
+            angka = angka.toString().replace(/\D/g, '');
+            return angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
         /* TAMBAH  */
         function hitungTambah() {
 
-    let j = parseInt($('#jumlahTambah').val()) || 0;
+            let j = parseInt($('#jumlahTambah').val()) || 0;
 
-    let h = $('#hargaTambah').val().replace(/\D/g, '');
-    h = parseInt(h) || 0;
+            let h = $('#hargaTambah').val().replace(/\D/g, '');
+            h = parseInt(h) || 0;
 
-    $('#totalTambah').val(
-        'Rp ' + (j * h).toLocaleString('id-ID')
-    );
-}
-$('#hargaTambah').on('input', function() {
+            $('#totalTambah').val(
+                'Rp ' + (j * h).toLocaleString('id-ID')
+            );
+        }
+        $('#hargaTambah').on('input', function() {
 
-    let angka = this.value.replace(/\D/g, '');
+            let angka = this.value.replace(/\D/g, '');
 
-    if (angka.length > 9) {
-        angka = angka.slice(0, 9);
-    }
+            if (angka.length > 9) {
+                angka = angka.slice(0, 9);
+            }
 
-    this.value = formatRupiah(angka);
-    hitungTambah();
-});
+            this.value = formatRupiah(angka);
+            hitungTambah();
+        });
 
 
         /* format harga tambah */
-$('#jumlahTambah').on('input', hitungTambah);
+        $('#jumlahTambah').on('input', hitungTambah);
         $('#jenisTambah').on('change', function() {
 
             if (this.value === 'keluar') {
                 $('.harga-tambah').hide();
-                $('#hargaTambah,#totalTambah').val('');
+                $('#hargaTambah')
+                    .val('')
+                    .prop('disabled', true);
+                $('#totalTambah').val('');
             } else {
                 $('.harga-tambah').show();
+                $('#hargaTambah').prop('disabled', false);
             }
 
         });
@@ -566,32 +590,32 @@ $('#jumlahTambah').on('input', hitungTambah);
         /* EDIT  */
         function hitungEdit() {
 
-    let j = parseInt($('#jumlahEdit').val()) || 0;
+            let j = parseInt($('#jumlahEdit').val()) || 0;
 
-    let h = $('#hargaEdit').val().replace(/\./g, '');
-    h = parseInt(h) || 0;
+            let h = $('#hargaEdit').val().replace(/\./g, '');
+            h = parseInt(h) || 0;
 
-    $('#totalEdit').val(
-        j && h ? 'Rp ' + (j * h).toLocaleString('id-ID') : ''
-    );
-}
+            $('#totalEdit').val(
+                j && h ? 'Rp ' + (j * h).toLocaleString('id-ID') : ''
+            );
+        }
 
         /* realtime hitung */
         $('#jumlahEdit, #hargaEdit').on('input', hitungEdit);
 
         /* format harga edit */
-$('#hargaEdit').on('input', function() {
+        $('#hargaEdit').on('input', function() {
 
-    let angka = this.value.replace(/\./g, '');
+            let angka = this.value.replace(/\./g, '');
 
-    if (angka.length > 9) {
-        angka = angka.slice(0, 9);
-    }
+            if (angka.length > 9) {
+                angka = angka.slice(0, 9);
+            }
 
-    this.value = formatRupiah(angka);
-    hitungEdit();
+            this.value = formatRupiah(angka);
+            hitungEdit();
 
-});
+        });
         /* perubahan jenis transaksi edit */
         $('#jenisEdit').on('change', function() {
 
@@ -608,41 +632,44 @@ $('#hargaEdit').on('input', function() {
         /* modal edit dibuka */
         $('#modalEditTransaksi').on('show.bs.modal', function(e) {
 
-    let btn = $(e.relatedTarget);
+            // CEK: kalau ada error edit, JANGAN override input
+            let isError = {{ $errors->edit->any() ? 'true' : 'false' }};
 
-    $('#formEditTransaksi').attr('action', baseUrl + '/' + btn.data('id'));
+            if (isError) return; // STOP di sini, biar pakai old()
 
-    // FIX NAMA BARANG
-    $('#namaEdit').val(''); // RESET DULU
+            let btn = $(e.relatedTarget);
+            let id = btn.data('id');
 
-let nama = btn.data('nama');
-$('#namaEdit option').each(function () {
-    if ($(this).val().toLowerCase() === String(nama).toLowerCase()) {
-        $(this).prop('selected', true);
-    }
-});
+            $('#formEditTransaksi').attr('action', baseUrl + '/' + btn.data('id'));
 
-    // jenis
-    $('#jenisEdit').val(btn.data('jenis'));
+            // FIX NAMA BARANG
+            $('#namaEdit').val(''); // RESET DULU
 
-    // jumlah (langsung angka asli)
-    $('#jumlahEdit').val(btn.data('jumlah'));
+            let nama = btn.data('nama');
+            $('#namaEdit option').each(function() {
+                if ($(this).val().toLowerCase() === String(nama).toLowerCase()) {
+                    $(this).prop('selected', true);
+                }
+            });
 
-    // harga
-let harga = parseInt(btn.data('harga')) || 0;
+            // jenis
+            $('#jenisEdit').val(btn.data('jenis'));
 
-$('#hargaEdit').val(harga ? formatRupiah(harga.toString()) : '');
-//     if (harga !== null && harga !== undefined && harga !== '') {
-// $('#hargaEdit').val(formatRupiah(harga));} else {
-//     $('#hargaEdit').val('');
-// }
+            // jumlah (langsung angka asli)
+            $('#jumlahEdit').val(btn.data('jumlah'));
 
-    // tanggal
-    $('#tanggalEdit').val(btn.data('tanggal'));
+            // harga
+            let harga = parseInt(btn.data('harga')) || 0;
 
-    $('#jenisEdit').trigger('change');
-    hitungEdit();
-});
+            $('#hargaEdit').val(harga ? formatRupiah(harga.toString()) : '');
+           
+
+            // tanggal
+            $('#tanggalEdit').val(btn.data('tanggal'));
+
+            $('#jenisEdit').trigger('change');
+            hitungEdit();
+        });
 
         /*  HAPUS  */
         $('#modalHapusTransaksi').on('show.bs.modal', function(e) {
@@ -686,15 +713,59 @@ $('#hargaEdit').val(harga ? formatRupiah(harga.toString()) : '');
     @endif
 
 
-    @if ($errors->any())
+    @if ($errors->any() && !$errors->edit->any())
         <script>
             $(document).ready(function() {
-
                 $('#modalTransaksi').modal('show');
-                hitungTambah();
 
+                let jenis = "{{ old('jenis_transaksi') }}";
+
+                if (jenis === 'keluar') {
+                    $('.harga-tambah').hide();
+                    $('#hargaTambah').prop('disabled', true);
+                } else {
+                    $('.harga-tambah').show();
+                    $('#hargaTambah').prop('disabled', false);
+                }
+
+                hitungTambah();
             });
         </script>
     @endif
 
+
+
+    @if ($errors->edit->any())
+        <script>
+            $(document).ready(function() {
+
+                let id = "{{ session('edit_id') }}";
+
+                // SET ACTION WAJIB!
+                $('#formEditTransaksi').attr('action', "{{ route('pakan') }}/" + id);
+
+                $('#modalEditTransaksi').modal('show');
+
+                // isi pakai old input
+                $('#jenisEdit').val("{{ old('jenis_transaksi') }}");
+                $('#tanggalEdit').val("{{ old('tanggal') }}");
+                $('#jumlahEdit').val("{{ old('jumlah') }}");
+
+                let nama = "{{ old('nama_barang') }}";
+                $('#namaEdit option').each(function() {
+                    if ($(this).val().toLowerCase() === nama.toLowerCase()) {
+                        $(this).prop('selected', true);
+                    }
+                });
+
+                let harga = "{{ old('harga_satuan') }}";
+                if (harga) {
+                    $('#hargaEdit').val(formatRupiah(harga));
+                }
+
+                $('#jenisEdit').trigger('change');
+                hitungEdit();
+            });
+        </script>
+    @endif
 @endsection
