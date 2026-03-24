@@ -61,13 +61,14 @@ class AyamController extends Controller
         return view('inventori-ayam', compact('data', 'kandang'));
     }
 
-        public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'jenis_mutasi' => 'required|in:masuk,mati,afkir,pindah',
-                        'jumlah' => 'required|integer|min:1|max:9999',
-                        'tanggal' => 'required|date|before_or_equal:today',
-                    ], [
+            'jumlah' => 'required|integer|min:1|max:9999',
+            'tanggal' => 'required|date|before_or_equal:today',
+            'keterangan' => 'required_if:jenis_mutasi,masuk,mati,afkir|string|max:255',
+        ], [
             'jenis_mutasi.required' => 'Jenis mutasi wajib dipilih.',
             'jenis_mutasi.in'       => 'Jenis mutasi tidak valid.',
 
@@ -78,6 +79,10 @@ class AyamController extends Controller
             'tanggal.required' => 'Tanggal wajib diisi.',
             'tanggal.date'     => 'Format tanggal tidak valid.',
             'tanggal.before_or_equal' => 'Tanggal tidak boleh melebihi hari ini.',
+
+            'keterangan.required_if' => 'Keterangan wajib diisi.',
+            'keterangan.string'   => 'Keterangan harus berupa teks.',
+            'keterangan.max'      => 'Keterangan maksimal 255 karakter.',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -135,7 +140,8 @@ ELSE 0 END
                     'jumlah'       => $request->jumlah,
                     'tanggal'      => $request->tanggal,
                     'keterangan'   => 'Pindahan dari ' . $kandangAsal->nama_kandang,
-                ]);}
+                ]);
+            }
 
             //  MUTASI BIASA
             else {
@@ -192,7 +198,13 @@ ELSE 0 END
     public function update(Request $request, $id)
     {
         $mutasi = MutasiAyam::findOrFail($id);
-
+        //  CEGAH EDIT DATA PINDAH
+        if (
+            $mutasi->jenis_mutasi === 'pindah' ||
+            str_contains($mutasi->keterangan, 'Pindahan dari')
+        ) {
+            abort(403, 'Data hasil pindahan tidak boleh diedit.');
+        }
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
@@ -203,8 +215,10 @@ ELSE 0 END
         $validator = Validator::make($request->all(), [
             'kandang_id'   => 'required|exists:kandang,id',
             'jenis_mutasi' => 'required|in:masuk,mati,afkir',
-                        'jumlah'       => 'required|integer|min:1',
+            'jumlah'       => 'required|integer|min:1|max:9999',
             'tanggal'      => 'required|date|before_or_equal:today',
+            'keterangan' => 'required_if:jenis_mutasi,masuk,mati,afkir|string|max:255',
+
         ], [
             'kandang_id.required'   => 'Nama kandang wajib dipilih.',
             'kandang_id.exists'     => 'Kandang tidak ditemukan.',
@@ -216,6 +230,9 @@ ELSE 0 END
             'tanggal.required'      => 'Tanggal wajib diisi.',
             'tanggal.date'          => 'Format tanggal tidak valid.',
             'tanggal.before_or_equal' => 'Tanggal tidak boleh melebihi hari ini.',
+            'keterangan.required_if' => 'Keterangan wajib diisi.',
+            'keterangan.string'   => 'Keterangan harus berupa teks.',
+            'keterangan.max'      => 'Keterangan maksimal 255 karakter.',
         ]);
 
         if ($validator->fails()) {
@@ -259,7 +276,7 @@ ELSE 0 END
             }
         }
 
-        //  UPDATE DATA 
+        //  UPDATE DATA
         $mutasi->update([
             'kandang_id'   => $request->kandang_id,
             'jenis_mutasi' => $request->jenis_mutasi,
@@ -273,15 +290,23 @@ ELSE 0 END
     }
     public function destroy($id)
     {
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-            if ($user->isKaryawan()) {
-        abort(403, 'Karyawan tidak boleh menghapus data.');
+        if ($user->isKaryawan()) {
+            abort(403, 'Karyawan tidak boleh menghapus data.');
         }
 
-        MutasiAyam::findOrFail($id)->delete();
+        $mutasi = MutasiAyam::findOrFail($id);
 
+        if (
+            $mutasi->jenis_mutasi === 'pindah' ||
+            str_contains($mutasi->keterangan, 'Pindahan dari')
+        ) {
+            abort(403, 'Data hasil pindahan tidak boleh dihapus.');
+        }
+
+        $mutasi->delete();
         return redirect()->route('ayam')
             ->with('success', 'Data berhasil dihapus.');
     }

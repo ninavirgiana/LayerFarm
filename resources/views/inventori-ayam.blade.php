@@ -11,26 +11,26 @@
                     <h4 class="mb-1 fw-bold">Populasi Ayam</h4>
                 </div>
                 <div class="mb-0 row">
-    @foreach ($kandang as $k)
-        <div class="mb-2 col-md-3 col-sm-6">
-            <div class="border-0 shadow-sm card">
-                <div class="py-2 text-center card-body">
+                    @foreach ($kandang as $k)
+                        <div class="mb-2 col-md-3 col-sm-6">
+                            <div class="border-0 shadow-sm card">
+                                <div class="py-2 text-center card-body">
 
-                    <div class="mb-1 fw-semibold text-dark">
-                        {{ $k->nama_kandang }}
-                    </div>
+                                    <div class="mb-1 fw-semibold text-dark">
+                                        {{ $k->nama_kandang }}
+                                    </div>
 
 
 
-                    <div class="mt-1 h6 fw-bold text-dark">
-                        {{ number_format($k->jumlah_ayam_terakhir, 0, ',', '.') }}
-                    </div>
+                                    <div class="mt-1 h6 fw-bold text-dark">
+                                        {{ number_format($k->jumlah_ayam_terakhir, 0, ',', '.') }}
+                                    </div>
 
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-            </div>
-        </div>
-    @endforeach
-</div>
                 <!-- ===== CARD ===== -->
                 <div class="shadow-sm card table-card">
 
@@ -79,12 +79,12 @@
                                     <label class="small text-muted">Tahun</label>
                                     <select name="tahun" id="filterTahun" class="form-control form-control-sm">
                                         <option value="">Semua</option>
-                                        @foreach ([2024, 2025, 2026] as $th)
+                                        @for ($th = now()->year - 2; $th <= now()->year; $th++)
                                             <option value="{{ $th }}"
                                                 {{ request('tahun') == $th ? 'selected' : '' }}>
                                                 {{ $th }}
                                             </option>
-                                        @endforeach
+                                        @endfor
                                     </select>
                                 </div>
 
@@ -140,9 +140,9 @@
 
                                             <td>{{ number_format($item->jumlah, 0, ',', '.') }}</td>
 
-                                    <td>
-    {{ ucfirst($item->jenis_mutasi ?? '-') }}
-</td>
+                                            <td>
+                                                {{ ucfirst($item->jenis_mutasi ?? '-') }}
+                                            </td>
 
                                             <td>{{ $item->keterangan ?? '-' }}</td>
 
@@ -151,24 +151,43 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <button class="btn btn-warning btn-sm" data-toggle="modal"
-                                                    data-target="#modalEdit" data-id="{{ $item->id }}"
-                                                    data-kandang="{{ $item->kandang_id }}"
+
+                                                @php
+                                                    $isPindahan =
+                                                        $item->jenis_mutasi === 'pindah' ||
+                                                        str_contains($item->keterangan, 'Pindahan dari');
+                                                @endphp
+
+                                                {{-- ✅ TOMBOL EDIT --}}
+                                                <button
+                                                    class="btn btn-warning btn-sm {{ $isPindahan ? 'disabled opacity-50' : '' }}"
+                                                    @if (!$isPindahan) data-toggle="modal"
+            data-target="#modalEdit" @endif
+                                                    data-id="{{ $item->id }}" data-kandang="{{ $item->kandang_id }}"
                                                     data-jumlah="{{ $item->jumlah }}"
                                                     data-jenis="{{ $item->jenis_mutasi }}"
                                                     data-keterangan="{{ $item->keterangan }}"
-                                                    data-tanggal="{{ $item->tanggal }}">
+                                                    data-tanggal="{{ $item->tanggal }}"
+                                                    style="{{ $isPindahan ? 'pointer-events: none;' : '' }}"
+                                                    title="{{ $isPindahan ? 'Data pindahan tidak bisa diedit' : '' }}">
                                                     <i class="la la-edit"></i>
                                                 </button>
 
+                                                {{-- ✅ TOMBOL HAPUS --}}
                                                 @auth
                                                     @if (auth()->user()->isAdmin())
-                                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                                            data-target="#modalHapus" data-id="{{ $item->id }}">
+                                                        <button
+                                                            class="btn btn-danger btn-sm {{ $isPindahan ? 'disabled opacity-50' : '' }}"
+                                                            @if (!$isPindahan) data-toggle="modal"
+                    data-target="#modalHapus" @endif
+                                                            data-id="{{ $item->id }}"
+                                                            style="{{ $isPindahan ? 'pointer-events: none;' : '' }}"
+                                                            title="{{ $isPindahan ? 'Data pindahan tidak bisa dihapus' : '' }}">
                                                             <i class="la la-trash"></i>
                                                         </button>
                                                     @endif
                                                 @endauth
+
                                             </td>
                                         </tr>
 
@@ -232,12 +251,19 @@
                             <label class="fw-bold">1. Pilih Jenis Mutasi</label>
                             <select name="jenis_mutasi" id="jenisMutasi"
                                 class="form-control mt-2 @error('jenis_mutasi') is-invalid @enderror">
+
                                 <option value="">-- Pilih Jenis Mutasi --</option>
-                                <option value="masuk">Masuk (DOC)</option>
-                                <option value="mati">Mati</option>
-                                <option value="afkir">Afkir</option>
-                                <option value="pindah">Pindah Kandang</option>
+                                <option value="masuk" {{ old('jenis_mutasi') == 'masuk' ? 'selected' : '' }}>Masuk (DOC)
+                                </option>
+                                <option value="mati" {{ old('jenis_mutasi') == 'mati' ? 'selected' : '' }}>Mati</option>
+                                <option value="afkir" {{ old('jenis_mutasi') == 'afkir' ? 'selected' : '' }}>Afkir
+                                </option>
+                                <option value="pindah" {{ old('jenis_mutasi') == 'pindah' ? 'selected' : '' }}>Pindah
+                                    Kandang</option>
                             </select>
+                            @error('jenis_mutasi')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
 
 
@@ -247,15 +273,19 @@
 
                             <div class="mt-2 form-group">
                                 <label>Nama Kandang</label>
-                                <select name="kandang_id" class="form-control">
+                                <select name="kandang_id" class="form-control @error('kandang_id') is-invalid @enderror">
                                     <option value="">-- Pilih Kandang --</option>
                                     @foreach ($kandang as $k)
-                                        <option value="{{ $k->id }}">
+                                        <option value="{{ $k->id }}"
+                                            {{ old('kandang_id') == $k->id ? 'selected' : '' }}>
                                             {{ $k->nama_kandang }}
                                             (Stok: {{ $k->jumlah_ayam_terakhir }})
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('kandang_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
 
@@ -266,25 +296,37 @@
 
                             <div class="mt-2 form-group">
                                 <label>Kandang Asal</label>
-                                <select name="kandang_asal_id" class="form-control">
+                                <select name="kandang_asal_id"
+                                    class="form-control @error('kandang_asal_id') is-invalid @enderror">
                                     <option value="">-- Pilih Kandang Asal --</option>
                                     @foreach ($kandang as $k)
-                                        <option value="{{ $k->id }}">
+                                        <option value="{{ $k->id }}"
+                                            {{ old('kandang_asal_id') == $k->id ? 'selected' : '' }}>
                                             {{ $k->nama_kandang }}
                                             (Stok: {{ $k->jumlah_ayam_terakhir }})
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('kandang_asal_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label>Kandang Tujuan</label>
-                                <select name="kandang_tujuan_id" class="form-control">
+                                <select name="kandang_tujuan_id"
+                                    class="form-control @error('kandang_tujuan_id') is-invalid @enderror">
                                     <option value="">-- Pilih Kandang Tujuan --</option>
                                     @foreach ($kandang as $k)
-                                        <option value="{{ $k->id }}">{{ $k->nama_kandang }}</option>
+                                        <option value="{{ $k->id }}"
+                                            {{ old('kandang_tujuan_id') == $k->id ? 'selected' : '' }}>
+                                            {{ $k->nama_kandang }}
+                                        </option>
                                     @endforeach
                                 </select>
+                                @error('kandang_tujuan_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
 
@@ -295,21 +337,31 @@
 
                             <div class="mt-2 form-group">
                                 <label>Jumlah Ayam</label>
-                                {{-- <input type="number" name="jumlah" class="form-control"> --}}
                                 <input type="number" name="jumlah" max="9999" min="1" inputmode="numeric"
                                     oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"
                                     class="form-control @error('jumlah') is-invalid @enderror"
                                     value="{{ old('jumlah') }}">
+                                @error('jumlah')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label>Tanggal</label>
-                                <input type="date" name="tanggal" class="form-control" max="{{ date('Y-m-d') }}">
+                                <input type="date" name="tanggal" value="{{ old('tanggal') }}"
+                                    class="form-control @error('tanggal') is-invalid @enderror"
+                                    max="{{ date('Y-m-d') }}">
+                                @error('tanggal')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label>Keterangan</label>
-                                <textarea name="keterangan" class="form-control" rows="2"></textarea>
+                                <textarea name="keterangan" class="form-control @error('keterangan') is-invalid @enderror" rows="2">{{ old('keterangan') }}</textarea>
+                                @error('keterangan')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
 
@@ -361,9 +413,7 @@
 
                         <div class="form-group">
                             <label>Jumlah Ayam</label>
-                            {{-- <input type="number" name="jumlah"
-       value="{{ old('jumlah') }}"
-       class="form-control @error('jumlah') is-invalid @enderror"> --}}
+
                             <input type="number" name="jumlah" max="9999" min="1" inputmode="numeric"
                                 oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"
                                 value="{{ old('jumlah') }}" class="form-control @error('jumlah') is-invalid @enderror">
@@ -377,9 +427,11 @@
                             <label>Jenis Mutasi</label>
                             <select name="jenis_mutasi" class="form-control @error('jenis_mutasi') is-invalid @enderror">
 
-                                <option value="masuk" {{ old('jenis_mutasi') == 'masuk' ? 'selected' : '' }}>Masuk</option>
+                                <option value="masuk" {{ old('jenis_mutasi') == 'masuk' ? 'selected' : '' }}>Masuk
+                                </option>
                                 <option value="mati" {{ old('jenis_mutasi') == 'mati' ? 'selected' : '' }}>Mati</option>
-                                <option value="afkir" {{ old('jenis_mutasi') == 'afkir' ? 'selected' : '' }}>Afkir</option>
+                                <option value="afkir" {{ old('jenis_mutasi') == 'afkir' ? 'selected' : '' }}>Afkir
+                                </option>
                             </select>
 
                             @error('jenis_mutasi')
@@ -452,11 +504,11 @@
 
 @section('scripts')
     <script>
-const baseUrl = "{{ route('ayam') }}";
+        const baseUrl = "{{ route('ayam') }}";
         $(document).ready(function() {
             /* =============================
-       HANDLE MODAL EDIT NORMAL
-    ============================= */
+               HANDLE MODAL EDIT NORMAL
+            ============================= */
             $('#modalEdit').on('show.bs.modal', function(e) {
 
                 // Jika ada error validation (mode old input)
