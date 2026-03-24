@@ -288,44 +288,78 @@
 
                     <div class="modal-body">
 
+                        <!-- KANDANG -->
                         <div class="form-group">
                             <label>Kandang</label>
-                            <select name="kandang_id" class="form-control">
+                            <select name="kandang_id" class="form-control @error('kandang_id') is-invalid @enderror">
+                                <option value="">-- Pilih Kandang --</option>
                                 @foreach ($kandang as $k)
-                                    <option value="{{ $k->id }}">{{ $k->nama_kandang }}</option>
+                                    <option value="{{ $k->id }}">
+                                        {{ $k->nama_kandang }}
+                                    </option>
                                 @endforeach
                             </select>
+
+                            @error('kandang_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
 
+                        <!-- SHIFT -->
                         <div class="form-group">
                             <label>Shift</label>
-                            <select name="shift" class="form-control">
-                                <option value="pagi">Pagi</option>
-                                <option value="sore">Sore</option>
+                            <select name="shift" class="form-control @error('shift') is-invalid @enderror">
+                                <option value="">-- Pilih Shift --</option>
+                                <option value="pagi" {{ old('shift') == 'pagi' ? 'selected' : '' }}>Pagi</option>
+                                <option value="sore" {{ old('shift') == 'sore' ? 'selected' : '' }}>Sore</option>
                             </select>
+
+                            @error('shift')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
 
+                        <!-- BERAT -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Berat Telur Layak (Kg)</label>
-                                    <input type="text" name="berat_telur_layak" class="form-control" maxlength="6" inputmode="decimal"
+                                    <input type="text" name="berat_telur_layak"
+                                        class="form-control @error('berat_telur_layak') is-invalid @enderror"
+                                        value="{{ old('berat_telur_layak') }}" maxlength="6" inputmode="decimal"
                                         oninput="validasiBerat(this)">
+
+                                    @error('berat_telur_layak')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Berat Telur Rusak (Kg)</label>
-                                    <input type="text" name="berat_telur_rusak" class="form-control" maxlength="6" inputmode="decimal"
+                                    <input type="text" name="berat_telur_rusak"
+                                        class="form-control @error('berat_telur_rusak') is-invalid @enderror"
+                                        value="{{ old('berat_telur_rusak') }}" maxlength="6" inputmode="decimal"
                                         oninput="validasiBerat(this)">
+
+                                    @error('berat_telur_rusak')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
 
+                        <!-- TANGGAL -->
                         <div class="form-group">
                             <label>Tanggal Produksi</label>
-                            <input type="date" name="tanggal_produksi" min="2000-01-01" max="{{ date('Y-m-d') }}"
-                                class="form-control">
+                            <input type="date" name="tanggal_produksi"
+                                class="form-control @error('tanggal_produksi') is-invalid @enderror"
+                                value="{{ old('tanggal_produksi') }}" min="2000-01-01" max="{{ date('Y-m-d') }}">
+
+                            @error('tanggal_produksi')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
 
                     </div>
@@ -391,52 +425,73 @@
             $('#formFilter').submit();
         });
 
-function formatBerat(angka) {
-    if (!angka && angka !== 0) return '';
+        function formatBerat(angka) {
+            if (!angka && angka !== 0) return '';
 
-    let num = Number(angka);
+            let num = Number(angka);
 
-    if (Number.isInteger(num)) {
-        return num.toString(); // contoh: 10 tetap 10
-    }
+            if (Number.isInteger(num)) {
+                return num.toString(); // contoh: 10 tetap 10
+            }
 
-    return num.toFixed(2).replace(/\.?0+$/, ''); // contoh: 10.50 → 10.5
-}
+            return num.toFixed(2).replace(/\.?0+$/, ''); // contoh: 10.50 → 10.5
+        }
         /*  MODAL EDIT  */
 
         $('#modalEditProduksi').on('show.bs.modal', function(e) {
-    let btn = $(e.relatedTarget);
-    let id = btn.data('id');
+            let btn = $(e.relatedTarget);
+            let id = btn.data('id');
 
-    let url = "{{ route('hasil.update', ':id') }}";
-    url = url.replace(':id', id);
+            let url = "{{ route('hasil.update', ':id') }}";
+            url = url.replace(':id', id);
 
-    $('#formEdit').attr('action', url);
+            $('#formEdit').attr('action', url);
 
-    $('#formEdit [name=kandang_id]').val(btn.data('kandang'));
-    $('#formEdit [name=shift]').val(btn.data('shift'));
-    $('#formEdit [name=berat_telur_layak]').val(formatBerat(btn.data('layak') ?? 0));
-    $('#formEdit [name=berat_telur_rusak]').val(formatBerat(btn.data('rusak') ?? 0));
-    $('#formEdit [name=tanggal_produksi]').val(btn.data('tanggal'));
-});
+            $('#formEdit [name=kandang_id]').val(btn.data('kandang'));
+            $('#formEdit [name=shift]').val(btn.data('shift'));
+            $('#formEdit [name=berat_telur_layak]').val(formatBerat(btn.data('layak') ?? 0));
+            $('#formEdit [name=berat_telur_rusak]').val(formatBerat(btn.data('rusak') ?? 0));
+            $('#formEdit [name=tanggal_produksi]').val(btn.data('tanggal'));
+        });
 
 
         /*  MODAL HAPUS  */
         $('#modalHapusProduksi').on('show.bs.modal', function(e) {
-    let btn = $(e.relatedTarget);
-    let id = btn.data('id');
+            let btn = $(e.relatedTarget);
+            let id = btn.data('id');
 
-    let url = "{{ route('hasil.destroy', ':id') }}";
-    url = url.replace(':id', id);
+            let url = "{{ route('hasil.destroy', ':id') }}";
+            url = url.replace(':id', id);
 
-    $('#formHapus').attr('action', url);
-});
+            $('#formHapus').attr('action', url);
+        });
 
 
         /*AUTO OPEN MODAL JIKA ERROR */
         @if ($errors->any())
             $(document).ready(function() {
-                $('#modalTambahProduksi').modal('show');
+
+                let form = "{{ session('form') }}";
+
+                if (form === 'edit') {
+                    let editId = "{{ session('edit_id') }}";
+                    $('#modalEditProduksi').modal('show');
+
+                    // langsung pakai old() untuk isi form
+                    $('#formEdit [name=kandang_id]').val("{{ old('kandang_id') }}");
+                    $('#formEdit [name=shift]').val("{{ old('shift') }}");
+                    $('#formEdit [name=berat_telur_layak]').val("{{ old('berat_telur_layak') }}");
+                    $('#formEdit [name=berat_telur_rusak]').val("{{ old('berat_telur_rusak') }}");
+                    $('#formEdit [name=tanggal_produksi]').val("{{ old('tanggal_produksi') }}");
+
+                    // set action form edit
+                    let url = "{{ route('hasil.update', ':id') }}".replace(':id', editId);
+                    $('#formEdit').attr('action', url);
+
+                } else {
+                    $('#modalTambahProduksi').modal('show');
+                }
+
             });
         @endif
 

@@ -99,3 +99,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
     });
 });
+Route::fallback(function () {
+    return Auth::check()
+        ? abort(404)
+        : redirect()->route('login');
+});

@@ -7,6 +7,7 @@ use App\Models\Kandang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class HasilController extends Controller
 {
@@ -47,9 +48,7 @@ class HasilController extends Controller
             });
         }
 
-        if ($request->kandang) {
-            $query->where('kandang_id', $request->kandang);
-        }
+
 
         if ($request->bulan) {
             $query->whereMonth('tanggal_produksi', $request->bulan);
@@ -79,7 +78,7 @@ class HasilController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'kandang_id' => 'required|exists:kandang,id',
             'shift' => 'required|in:pagi,sore',
             'berat_telur_layak' => 'required|regex:/^\d{1,6}(\.\d{1,2})?$/',
@@ -103,15 +102,23 @@ class HasilController extends Controller
             'tanggal_produksi.before_or_equal' => 'Tanggal tidak boleh melebihi hari ini.',
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->route('hasil')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('form', 'tambah');
+        }
 
-        $total = $request->berat_telur_layak + $request->berat_telur_rusak;
+        $layak = (float) $request->berat_telur_layak;
+        $rusak = (float) $request->berat_telur_rusak;
+        $total = $layak + $rusak;
 
         ProduksiTelur::create([
             'kandang_id' => $request->kandang_id,
             'user_id' => Auth::id(),
             'shift' => $request->shift,
-            'berat_telur_layak' => $request->berat_telur_layak,
-            'berat_telur_rusak' => $request->berat_telur_rusak,
+            'berat_telur_layak' => $layak,
+            'berat_telur_rusak' => $rusak,
             'berat_telur_total' => $total,
             'tanggal_produksi' => $request->tanggal_produksi,
         ]);
@@ -123,7 +130,7 @@ class HasilController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'kandang_id' => 'required|exists:kandang,id',
             'shift' => 'required|in:pagi,sore',
             'berat_telur_layak' => 'required|regex:/^\d{1,6}(\.\d{1,2})?$/',
@@ -150,20 +157,29 @@ class HasilController extends Controller
             'tanggal_produksi.before_or_equal' => 'Tanggal tidak boleh melebihi hari ini.',
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->route('hasil')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('form', 'edit')
+                ->with('edit_id', $id);
+        }
 
-        $total = $request->berat_telur_layak + $request->berat_telur_rusak;
+        $layak = (float) $request->berat_telur_layak;
+        $rusak = (float) $request->berat_telur_rusak;
+        $total = $layak + $rusak;
 
         ProduksiTelur::findOrFail($id)->update([
             'kandang_id' => $request->kandang_id,
             'shift' => $request->shift,
-            'berat_telur_layak' => $request->berat_telur_layak,
-            'berat_telur_rusak' => $request->berat_telur_rusak,
+            'berat_telur_layak' => $layak,
+            'berat_telur_rusak' => $rusak,
             'berat_telur_total' => $total,
             'tanggal_produksi' => $request->tanggal_produksi,
         ]);
 
         return redirect()->route('hasil')
-            ->with('success', 'Data produksi berhasil diperbarui.');
+            ->with('success', 'Data berhasil diupdate.');
     }
 
 
