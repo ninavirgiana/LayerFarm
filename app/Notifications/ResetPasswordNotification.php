@@ -9,10 +9,12 @@ class ResetPasswordNotification extends ResetPassword
 {
     public function toMail($notifiable)
     {
-        $url = url(route('password.reset', [
+        
+
+        $url = route('password.reset', [
             'token' => $this->token,
             'email' => $notifiable->getEmailForPasswordReset(),
-        ], false));
+        ]);
 
         return (new MailMessage)
             ->subject('Reset Kata Sandi Akun Anda')
